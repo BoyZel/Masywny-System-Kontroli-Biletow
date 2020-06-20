@@ -1,2 +1,2 @@
 # Masywny-System-Kontroli-Biletow
-Masywny (Potężny) System Kontroli Biletów 
+Masywny (Potężny) System Kontroli Biletów.
