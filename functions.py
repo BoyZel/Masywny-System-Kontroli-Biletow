@@ -259,7 +259,27 @@ def aktualizuj_skaner(conn):
     print('Skaner zaktualizowany')
 
     conn.commit()
-    
+
+# ****************************************************wyswietl bilety klienta****************************************
+def wyswietl_bilety_klienta(conn):
+    pesel = input("Wpisz pesel klienta : ")
+    dane_pesel = conn.execute('''
+                            SELECT * FROM pasażerowie WHERE pesel = ?;
+                            ''',
+                                 (pesel,)).fetchone()
+    if not dane_pesel:
+        print("Nie ma takiego klienta")
+        return
+
+    dane_bilety = conn.execute('''
+                            SELECT * FROM bilety_elektroniczne WHERE pasażerowie_pesel = ?;
+                            ''',
+                            (pesel,)).fetchall()
+    if not dane_bilety:
+        print("Brak biletow")
+    for bilet in dane_bilety:
+        print(bilet)
+
 #*******************************************************************************dodaj klienta********************
 def dodaj_klienta(conn):
 

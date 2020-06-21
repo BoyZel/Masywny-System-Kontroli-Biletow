@@ -78,7 +78,7 @@ while choice != 'q':
         if inner_choice == "1":
             wprowadz_platnosc(conn)
         elif inner_choice == "2":
-            print("    Sprawdzam okresy waznosci wybranego biletu elektronicznego.")
+            wyswietl_bilety_klienta(conn)
         else:
             print("    Nie rozpoznano polecenia.")
 
