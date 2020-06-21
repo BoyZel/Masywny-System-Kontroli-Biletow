@@ -42,12 +42,16 @@ while choice != 'q':
         inner_choice = input("     Wprowadz numer opcji:")
         if inner_choice == "1":
             print("    Przypisuje skaner.")
+            przypisz_skaner(conn)
         elif inner_choice == "2":
             print("    Wyswietlam liste kontrolerow:")
+            kontrolerzy_lista(conn)
         elif inner_choice == "3":
             print ("   Wyswietlam liste skanerow:")
+            skanery_lista(conn)
         elif inner_choice == "4":
             print("    Aktualizuje dane skanera.")
+            aktualizuj_skaner(conn)
         else:
             print("    Nie rozpoznano polecenia.")
 
@@ -72,7 +76,7 @@ while choice != 'q':
 
         inner_choice = input("    Wprowadz numer opcji:")
         if inner_choice == "1":
-            print("    Wprowadzam platnosc.")
+            wprowadz_platnosc(conn)
         elif inner_choice == "2":
             print("    Sprawdzam okresy waznosci wybranego biletu elektronicznego.")
         else:
