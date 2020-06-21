@@ -25,9 +25,9 @@ while choice != 'q':
 
         inner_choice = input("    Please make a choice: ")
         if inner_choice == "1":
-            print("    Wprowadzam mandat.")
+            dodaj_mandat(conn)
         elif inner_choice == "2":
-            print("    Usuwam mandat.")
+            usun_mandat(conn)
         elif inner_choice == "3":
             wyswietl_mandat(conn)
         else:
