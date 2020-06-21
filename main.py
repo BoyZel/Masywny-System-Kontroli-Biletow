@@ -72,7 +72,7 @@ while choice != 'q':
 
         inner_choice = input("    Wprowadz numer opcji:")
         if inner_choice == "1":
-            print("    Wprowadzam platnosc.")
+            wprowadz_platnosc(conn)
         elif inner_choice == "2":
             print("    Sprawdzam okresy waznosci wybranego biletu elektronicznego.")
         else:

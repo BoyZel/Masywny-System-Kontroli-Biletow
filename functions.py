@@ -107,13 +107,13 @@ def dodaj_mandat(conn):
 
 
 def usun_mandat(conn):
-    id_choice = input("    Wpisz id mandatu : ")
+    id_choice = input("Wpisz id mandatu : ")
     dane = conn.execute('''
                         SELECT * FROM mandaty WHERE mandat_id = ?;
                         ''',
                         (id_choice,)).fetchone()
     if not dane:
-        print("Nie ma takiego biletu")
+        print("Nie ma takiego mandatu")
         return
 
     conn.execute('''
@@ -121,3 +121,40 @@ def usun_mandat(conn):
                         ''',
                         (id_choice,))
     print("Mandat usuniety")
+
+
+def wprowadz_platnosc(conn):
+    kwota = input("Podaj kwote")
+    if int(kwota) <= 0:
+        print("Kwota musi byc dodatnia")
+        return
+
+    data_wprowadzenia = datetime.today().date()
+
+    rodzaje_platnosci = {1: 'gotówka', 2: 'karta', 3: 'przelew'}
+    tmp = input(f"Podaj typ platnosci 1: {rodzaje_platnosci[1]}, 2: {rodzaje_platnosci[2]}, 3: {rodzaje_platnosci[3]} ")
+    if not (tmp == "1" or tmp == "2" or tmp == "3"):
+        return
+    typ = rodzaje_platnosci[int(tmp)]
+
+    mandat_id = input("Wpisz id mandatu do oplacenia : ")
+    dane_mand = conn.execute('''
+                        SELECT * FROM mandaty WHERE mandat_id = ?;
+                        ''',
+                        (mandat_id,)).fetchone()
+    if not dane_mand:
+        print("Nie ma takiego mandatu")
+        return
+
+    conn.execute('''INSERT INTO płatności
+                    (kwota, 
+                    data_płatności, 
+                    typ, 
+                    mandat_mandat_id)
+                    VALUES (?,?,?,?)
+                    ''',
+                 (kwota, data_wprowadzenia, typ, mandat_id)
+                 )
+    conn.commit()
+    print("Dodano nowa platnosc")
+
