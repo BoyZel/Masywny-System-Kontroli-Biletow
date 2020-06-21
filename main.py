@@ -9,14 +9,14 @@ conn = sqlite3.connect('database.db')
 choice = '0'
 inner_choice = '0'
 while choice != 'q':
-    print("Wcisnij odpowiedni numer aby przejsc do wybranej opcji.")
+    print("\nWcisnij odpowiedni numer aby przejsc do wybranej opcji.")
     print("1. Zarzadzanie mandatami.")
     print("2. Zarzadzanie kontrolerami i skanerami.")
     print("3. Zarzadzanie klientami i biletami elektronicznymi.")
     print("4. Zarzadzanie platnosciami.")
-    print("   Wcisnij q aby opuscic program")
+    print("5. Wcisnij q aby opuscic program")
 
-    choice = input("    Wprowadz numer opcji: ")
+    choice = input("Wprowadz numer opcji: ")
 
     if choice == "1":
         print("    Wybierz 1 aby wprowadzic mandat.")
@@ -29,7 +29,7 @@ while choice != 'q':
         elif inner_choice == "2":
             print("    Usuwam mandat.")
         elif inner_choice == "3":
-            print("    Wprowadzam mandat.")
+            wyswietl_mandat(conn)
         else:
             print("    Nie rozpoznano polecenia.")
 
