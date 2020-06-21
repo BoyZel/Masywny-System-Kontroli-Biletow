@@ -55,13 +55,13 @@ while choice != 'q':
             print("    Nie rozpoznano polecenia.")
 
     elif choice == "3":
-        print("Wybierz 1 aby wyswietlic liczbe sprzedanych biletow w zależności od miesiąca.")
+        print("Wybierz 1 aby wyswietlic liczbe sprzedanych biletow o danej dlugosci okresu.")
         print("Wybierz 2 aby wyswietlic dane pojedynczego biletu.")
         print("Wybierz 3 aby wyswietlić sprzedane bilety w zależności od typu")
         print("Wybierz 4 aby wyświetlić bilety w zależności od wieku kupującego")
         inner_choice = input("    Wprowadz numer opcji: ")
         if inner_choice == "1":
-            bilety_miesiac(conn)
+            bilety_okres(conn)
         elif inner_choice == "2":
             wyswietl_bilet(conn)
         elif inner_choice == "3":
