@@ -32,7 +32,9 @@ while choice != 'q':
         elif inner_choice == "3":
             wyswietl_mandaty(conn)
         elif inner_choice == "4":
-            wyswietl_mandaty(conn)
+            wyswietl_mandat(conn)
+        elif inner_choice == "5":
+            mandat_typ(conn)
 
         else:
             print("    Nie rozpoznano polecenia.")
