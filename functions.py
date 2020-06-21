@@ -279,3 +279,134 @@ def wyswietl_bilety_klienta(conn):
         print("Brak biletow")
     for bilet in dane_bilety:
         print(bilet)
+
+#*******************************************************************************dodaj klienta********************
+def dodaj_klienta(conn):
+
+    imie = input("Podaj imię pasażera")
+    nazwisko = input("Podaj nazwisko pasażera")
+    pesel = input("Podaj numer PESEL pasażera")
+
+    if not pesel.isdigit() or not len(pesel) == 11:
+        print('Błędne dane')
+        return
+
+
+    conn.execute('''INSERT INTO pasażerowie
+                    (pesel,
+                    imię,
+                    nazwisko)
+                    VALUES (?,?,?)
+                    ''',
+                    (pesel, imie, nazwisko)
+                 )
+
+    print('Pasażer dodany')
+    conn.commit()
+    
+#*******************************************************************************dodaj bilet********************
+def dodaj_bilet(conn):
+
+    pasazerowie_pesel = input("Podaj numer PESEL pasażera")
+    wybor = conn.execute('''
+                          SELECT * FROM pasażerowie WHERE pesel = ?;
+                          ''',
+                          (pasazerowie_pesel,)).fetchone()
+
+    if not wybor:
+        return
+
+
+    dane = conn.execute('''
+                        SELECT * FROM typy_ulg;
+                        ''').fetchall()
+    for bilet in dane:
+        print(bilet)
+
+    typy_ulg_nazwa = input("Wpisz rodzaj ulgi")
+    wybor2 = conn.execute('''
+                          SELECT * FROM typy_ulg WHERE nazwa = ?;
+                          ''',
+                         (typy_ulg_nazwa,)).fetchone()
+
+    if not wybor2:
+        print('Błędne dane')
+        return
+
+
+    dane2 = conn.execute('''
+                            SELECT * FROM typy_okresów;
+                            ''').fetchall()
+    for okres in dane2:
+        print(okres)
+
+    okres_waznosci = input("Wpisz okres ważności")
+    wybor3 = conn.execute('''
+                              SELECT * FROM typy_okresów WHERE okres_ważności = ?;
+                              ''',
+                          (okres_waznosci,)).fetchone()
+
+    if not wybor3:
+        print('Błędne dane')
+        return
+
+    data_wystawienia = datetime.today().date()
+    koniec_waznosci = data_wystawienia + timedelta(days=(30 * int(okres_waznosci)))
+
+    cena = input("Podaj cenę biletu")
+    if int(cena) <= 0:
+        print('Błędne dane')
+        return
+
+    cena = (int(wybor2[1]) * int(cena)) / 100
+    int(cena)
+
+    conn.execute('''INSERT INTO bilety_elektroniczne
+                    (data_wystawienia,
+                    koniec_ważności,
+                    cena,
+                    pasażerowie_pesel,
+                    typy_ulg_nazwa,
+                    typy_okresów_okres_ważności)
+                    VALUES (?,?,?,?,?,?)
+                    ''',
+                    (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
+                 )
+
+    print('Bilet elektroniczny dodany')
+    conn.commit()
+    
+#*******************************************************************************przedloz bilet********************
+def przedloz_bilet(conn):
+
+    id_biletu = input("Podaj id biletu pasażera")
+    wybor = conn.execute('''
+                          SELECT * FROM bilety_elektroniczne WHERE id_biletu = ?;
+                          ''',
+                          (id_biletu,)).fetchone()
+
+    if not wybor:
+        print('Nie ma takiego biletu')
+        return
+
+    cena = int(wybor[3])
+    pasazerowie_pesel = wybor[4]
+    typy_ulg_nazwa = wybor[5]
+    okres_waznosci = wybor[6]
+    data_wystawienia = datetime.today().date()
+    koniec_waznosci = data_wystawienia + timedelta(days=(30 * int(okres_waznosci)))
+
+    conn.execute('''INSERT INTO bilety_elektroniczne
+                    (data_wystawienia,
+                    koniec_ważności,
+                    cena,
+                    pasażerowie_pesel,
+                    typy_ulg_nazwa,
+                    typy_okresów_okres_ważności)
+                    VALUES (?,?,?,?,?,?)
+                    ''',
+                    (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
+                 )
+
+    print('Bilet elektroniczny przedłóżony')
+    conn.commit()
