@@ -140,7 +140,9 @@ def bilety_wiek(conn):
                         SELECT id_biletu FROM bilety_elektroniczne WHERE SUBSTR(pasażerowie_pesel, 1, 2) = ?;
                         ''',
                         (pesel_numbers,)).fetchall()
-    print(dane)
+    for dana in dane:
+        print(dana[0])
+
 def ranking_kontrolerow(conn):
     dane = conn.execute('''
                         SELECT nr_legitymacji, ilość_mandatów_wystawionych FROM kontrolerzy ORDER BY ilość_mandatów_wystawionych DESC;
