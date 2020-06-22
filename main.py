@@ -63,10 +63,13 @@ while choice != 'q':
         inner_choice = input("    Wprowadz numer opcji: ")
         if inner_choice == "1":
             print("    Dodaje klienta.")
+            dodaj_klienta(conn)
         elif inner_choice == "2":
             print("    Dodaje bilet elektroniczny.")
+            dodaj_bilet(conn)
         elif inner_choice == "3":
             print("    Przedluzam waznosc biletu.")
+            przedloz_bilet(conn)
         else:
             print("    Nie rozpoznano polecenia.")
 

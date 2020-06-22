@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 def pojazd_id(conn):
     id_choice = input("Choose id: ")
     dane = conn.execute('''
@@ -9,9 +10,9 @@ def pojazd_id(conn):
     # fetchone gdy jeden wiersz chcemy pobrac / fetchall gdy wszystkie wiersze spelniajace warunek chcemy
     print(dane)
 
-#****************************************************************************dodaj mandat*******************************
-def dodaj_mandat(conn):
 
+# ****************************************************************************dodaj mandat*******************************
+def dodaj_mandat(conn):
     wystawienie = datetime.today().date()
     zaplata = wystawienie + timedelta(days=30)
 
@@ -23,11 +24,12 @@ def dodaj_mandat(conn):
 
     tmp = input("Podaj przyczynę wystawienia 1 - pierwszy wybór, 2 - drugi wybór: ")
 
-    if tmp == "1":
+    if tmp == "2":
         przyczyna_wystawienia = 'Brak ważnej legitymacji studenckiej'
-    elif tmp == "2":
+    elif tmp == "1":
         przyczyna_wystawienia = 'Brak ważnego biletu'
-    else: return
+    else:
+        return
 
     linie_numer = input("Podaj numer linii")
     wybor2 = conn.execute('''
@@ -60,7 +62,7 @@ def dodaj_mandat(conn):
     wybor4 = conn.execute('''
                           SELECT * FROM pojazdy WHERE nr_pojazdu = ?;
                           ''',
-                         (nr_pojazdu,)).fetchone()
+                          (nr_pojazdu,)).fetchone()
 
     if not wybor4:
         return
@@ -69,12 +71,10 @@ def dodaj_mandat(conn):
     wybor5 = conn.execute('''
                     SELECT * FROM przystanki WHERE id_przystanku = ?;
                     ''',
-                    (id_przystanku,)).fetchone()
+                          (id_przystanku,)).fetchone()
 
     if not wybor5:
         return
-
-
 
     conn.execute('''INSERT INTO mandaty
                     (data_wystawienia,
@@ -87,13 +87,15 @@ def dodaj_mandat(conn):
                     przystanki_id_przystanku)
                     VALUES (?,?,?,?,?,?,?,?)
                     ''',
-                    (wystawienie, zaplata, przyczyna_wystawienia, linie_numer,
-                     pasazerowie_pesel, nr_legitymacji, nr_pojazdu, id_przystanku)
+                 (wystawienie, zaplata, przyczyna_wystawienia, linie_numer,
+                  pasazerowie_pesel, nr_legitymacji, nr_pojazdu, id_przystanku)
                  )
 
     print('Mandat dodany')
+    conn.commit()
 
-#******************************************************************************************wyswietl mandat**************
+
+# ******************************************************************************************wyswietl mandat**************
 def wyswietl_mandat(conn):
     pesel_choice = input("    Wpisz pesel : ")
     dane = conn.execute('''
@@ -106,7 +108,8 @@ def wyswietl_mandat(conn):
     for mandat in dane:
         print("    " + mandat)
 
-#**********************************************************************usun mandat**************************************
+
+# **********************************************************************usun mandat**************************************
 def usun_mandat(conn):
     id_choice = input("Wpisz id mandatu : ")
     dane = conn.execute('''
@@ -120,10 +123,12 @@ def usun_mandat(conn):
     conn.execute('''
                         DELETE FROM mandaty WHERE mandat_id = ?;
                         ''',
-                        (id_choice,))
+                 (id_choice,))
     print("Mandat usuniety")
+    conn.commit()
 
-#******************************************************************************wprowadz platnosc************************
+
+# ******************************************************************************wprowadz platnosc************************
 def wprowadz_platnosc(conn):
     kwota = input("Podaj kwote")
     if int(kwota) <= 0:
@@ -142,7 +147,7 @@ def wprowadz_platnosc(conn):
     dane_mand = conn.execute('''
                         SELECT * FROM mandaty WHERE mandat_id = ?;
                         ''',
-                        (mandat_id,)).fetchone()
+                             (mandat_id,)).fetchone()
     if not dane_mand:
         print("Nie ma takiego mandatu")
         return
@@ -159,7 +164,8 @@ def wprowadz_platnosc(conn):
     conn.commit()
     print("Dodano nowa platnosc")
 
-#*******************************************************************************kontrolerzy lista***********************
+
+# *******************************************************************************kontrolerzy lista***********************
 def kontrolerzy_lista(conn):
     dane = conn.execute('''
                         SELECT * FROM kontrolerzy;
@@ -167,14 +173,17 @@ def kontrolerzy_lista(conn):
     for kontroler in dane:
         print(kontroler)
 
-#*******************************************************************************skanery lista***************************
+
+# *******************************************************************************skanery lista***************************
 def skanery_lista(conn):
     dane = conn.execute('''
                         SELECT * FROM skanery;
                         ''').fetchall()
     for skaner in dane:
         print(skaner)
-#*****************************************************************************konkretna funkcja*************************
+
+
+# *****************************************************************************konkretna funkcja*************************
 def przypisz_skaner(conn):
     legitymacja = input("   Podaj nr odznaki kontrolera, ktoremu chcesz przypisac skaner. ")
     nr_skanera = input("    Podaj nr skanera, ktory chcesz przypisac. ")
@@ -190,7 +199,7 @@ def przypisz_skaner(conn):
     dane_bis = conn.execute('''
                                SELECT * FROM skanery WHERE nr_urządzenia = ? AND stan = ?;
                                ''',
-                        (nr_skanera,"dostępny")).fetchone()
+                            (nr_skanera, "dostępny")).fetchone()
 
     if not dane_bis:
         print("    Wybrany skaner jest niedostepny. ")
@@ -225,12 +234,14 @@ def przypisz_skaner(conn):
 
     conn.commit()
 
-#**************************************************************aktualizuj skaner****************************************
+
+# **************************************************************aktualizuj skaner****************************************
 def aktualizuj_skaner(conn):
     nr_skanera = input("    Podaj nr skanera, ktorego dane chcesz zaktualizowac. ")
     print("Wcisnij odpowiedni numer aby przejsc do wybranej opcji.")
     print("1. Aktualizacja daty ostatniego przegladu.")
     print("2. Zmiana statusu na w naprawie (tylko jesli nie jest wypozyczony).")
+    print("3. Zmiana statusu na dostępny(jeśli był w naprawie).")
     choice = input("    Wprowadz numer opcji: ")
 
     if choice == "1":
@@ -246,19 +257,35 @@ def aktualizuj_skaner(conn):
                             SELECT * FROM skanery WHERE nr_urządzenia = ? AND stan = ?;
                             ''',
                             (nr_skanera, "dostępny")).fetchone()
-        
+
         if not dane:
             print("Nie mozna wyslac do naprawy podanego skanera.")
-            return 
-        
+            return
+
         conn.execute('''
                     UPDATE skanery SET stan = ? WHERE nr_urządzenia = ?;
                     ''',
-                    ("w naprawie",nr_skanera ))
+                     ("w naprawie", nr_skanera))
+
+    elif choice == "3":
+        dane = conn.execute('''
+                                    SELECT * FROM skanery WHERE nr_urządzenia = ? AND stan = ?;
+                                    ''',
+                            (nr_skanera, "w naprawie")).fetchone()
+
+        if not dane:
+            print("Podany skaner nie jest aktualnie naprawiany.")
+            return
+
+        conn.execute('''
+                            UPDATE skanery SET stan = ? WHERE nr_urządzenia = ?;
+                            ''',
+                     ("dostępny", nr_skanera))
 
     print('Skaner zaktualizowany')
 
     conn.commit()
+
 
 # ****************************************************wyswietl bilety klienta****************************************
 def wyswietl_bilety_klienta(conn):
@@ -266,7 +293,7 @@ def wyswietl_bilety_klienta(conn):
     dane_pesel = conn.execute('''
                             SELECT * FROM pasażerowie WHERE pesel = ?;
                             ''',
-                                 (pesel,)).fetchone()
+                              (pesel,)).fetchone()
     if not dane_pesel:
         print("Nie ma takiego klienta")
         return
@@ -274,15 +301,15 @@ def wyswietl_bilety_klienta(conn):
     dane_bilety = conn.execute('''
                             SELECT * FROM bilety_elektroniczne WHERE pasażerowie_pesel = ?;
                             ''',
-                            (pesel,)).fetchall()
+                               (pesel,)).fetchall()
     if not dane_bilety:
         print("Brak biletow")
     for bilet in dane_bilety:
         print(bilet)
 
-#*******************************************************************************dodaj klienta********************
-def dodaj_klienta(conn):
 
+# *******************************************************************************dodaj klienta********************
+def dodaj_klienta(conn):
     imie = input("Podaj imię pasażera")
     nazwisko = input("Podaj nazwisko pasażera")
     pesel = input("Podaj numer PESEL pasażera")
@@ -291,31 +318,29 @@ def dodaj_klienta(conn):
         print('Błędne dane')
         return
 
-
     conn.execute('''INSERT INTO pasażerowie
                     (pesel,
                     imię,
                     nazwisko)
                     VALUES (?,?,?)
                     ''',
-                    (pesel, imie, nazwisko)
+                 (pesel, imie, nazwisko)
                  )
 
     print('Pasażer dodany')
     conn.commit()
-    
-#*******************************************************************************dodaj bilet********************
-def dodaj_bilet(conn):
 
+
+# *******************************************************************************dodaj bilet********************
+def dodaj_bilet(conn):
     pasazerowie_pesel = input("Podaj numer PESEL pasażera")
     wybor = conn.execute('''
                           SELECT * FROM pasażerowie WHERE pesel = ?;
                           ''',
-                          (pasazerowie_pesel,)).fetchone()
+                         (pasazerowie_pesel,)).fetchone()
 
     if not wybor:
         return
-
 
     dane = conn.execute('''
                         SELECT * FROM typy_ulg;
@@ -327,12 +352,11 @@ def dodaj_bilet(conn):
     wybor2 = conn.execute('''
                           SELECT * FROM typy_ulg WHERE nazwa = ?;
                           ''',
-                         (typy_ulg_nazwa,)).fetchone()
+                          (typy_ulg_nazwa,)).fetchone()
 
     if not wybor2:
         print('Błędne dane')
         return
-
 
     dane2 = conn.execute('''
                             SELECT * FROM typy_okresów;
@@ -358,7 +382,7 @@ def dodaj_bilet(conn):
         print('Błędne dane')
         return
 
-    cena = (int(wybor2[1]) * int(cena)) / 100
+    cena = ((100 - int(wybor2[1])) * int(cena)) / 100
     int(cena)
 
     conn.execute('''INSERT INTO bilety_elektroniczne
@@ -370,20 +394,20 @@ def dodaj_bilet(conn):
                     typy_okresów_okres_ważności)
                     VALUES (?,?,?,?,?,?)
                     ''',
-                    (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
+                 (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
                  )
 
     print('Bilet elektroniczny dodany')
     conn.commit()
-    
-#*******************************************************************************przedloz bilet********************
-def przedloz_bilet(conn):
 
+
+# *******************************************************************************przedloz bilet********************
+def przedloz_bilet(conn):
     id_biletu = input("Podaj id biletu pasażera")
     wybor = conn.execute('''
                           SELECT * FROM bilety_elektroniczne WHERE id_biletu = ?;
                           ''',
-                          (id_biletu,)).fetchone()
+                         (id_biletu,)).fetchone()
 
     if not wybor:
         print('Nie ma takiego biletu')
@@ -405,7 +429,7 @@ def przedloz_bilet(conn):
                     typy_okresów_okres_ważności)
                     VALUES (?,?,?,?,?,?)
                     ''',
-                    (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
+                 (data_wystawienia, koniec_waznosci, cena, pasazerowie_pesel, typy_ulg_nazwa, okres_waznosci)
                  )
 
     print('Bilet elektroniczny przedłóżony')
