@@ -360,7 +360,7 @@ def dodaj_bilet(conn):
         print('Błędne dane')
         return
 
-    cena = (int(wybor2[1]) * int(cena)) / 100
+    cena = ((100 - int(wybor2[1])) * int(cena)) / 100
     int(cena)
 
     conn.execute('''INSERT INTO bilety_elektroniczne
