@@ -23,9 +23,9 @@ def dodaj_mandat(conn):
 
     tmp = input("Podaj przyczynę wystawienia 1 - pierwszy wybór, 2 - drugi wybór: ")
 
-    if tmp == "1":
+    if tmp == "2":
         przyczyna_wystawienia = 'Brak ważnej legitymacji studenckiej'
-    elif tmp == "2":
+    elif tmp == "1":
         przyczyna_wystawienia = 'Brak ważnego biletu'
     else: return
 
