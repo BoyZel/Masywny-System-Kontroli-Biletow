@@ -9,7 +9,8 @@ def ranking_linii(conn):
                         ORDER BY ilość_mandatów DESC;
                         ''',
                         ).fetchall()
-    print(dane)
+    for linia in dane:
+        print(f"Numer linii: {linia[0]}  wystawionych mandatów: {linia[1]}")
 
 
 def statystyki_linii(conn):
@@ -18,9 +19,10 @@ def statystyki_linii(conn):
                         SELECT * FROM linie WHERE numer = ?;
                         ''',
                         (numer_choice,)).fetchone()
-    # fetchone gdy jeden wiersz chcemy pobrac / fetchall gdy wszystkie wiersze spelniajace warunek chcemy
-    print(dane)
-
+    if not dane:
+        print("    Nie ma takiej linii")
+        return
+    print(f"Na linii {dane[0]} wystawiono {dane[1]} mandatów")
 
 def wyswietl_mandat(conn):
     id_choice = input("    Wpisz id mandatu : ")
@@ -57,7 +59,9 @@ def wyswietl_mandaty(conn):
                         WHERE m.wysokość_kary > p.kwota;
                         ''',
                         ).fetchall()
-    print(dane)
+    print("Nieopłacone mandaty: ")
+    for mandat in dane:
+        print(f"ID mandatu: {mandat[0]} ")
     
 def mandat_typ(conn):
     type_choice = input('''
@@ -76,13 +80,12 @@ def mandat_typ(conn):
                             SELECT mandat_id FROM mandaty WHERE typy_mandatów_przyczyna_wystawienia = 'Brak ważnego biletu';
                             ''',
                             ).fetchall() 
-    print(dane)
+    if not dane:
+        print("    Brak mandatow o danym typie")
+        return
+    for mandat in dane:
+        print(f"ID mandatu: {mandat[0]} ")
 
-def lista_kontrolerow(conn):
-    dane = conn.execute('''
-                        SELECT * FROM kontrolerzy WHERE mandat_id = ?;
-                        ''',
-                        ).fetchall()
 
 def bilety_typ(conn):
     typ_choice = input("    Wpisz typ: ")
@@ -120,83 +123,29 @@ def bilety_okres(conn):
         return
     print(dane[0][0])
 
-def dodaj_mandat(conn):
-    wystawienie = datetime.today().date()
-    zaplata = wystawienie + timedelta(days=30)
-
+def ranking_kontrolerow(conn):
     dane = conn.execute('''
-                        SELECT przyczyna_wystawienia FROM typy_mandatów;
-                        ''').fetchall()
-    for mandat in dane:
-        print(mandat)
-
-    tmp = input("Podaj przyczynę wystawienia 1 - pierwszy wybór, 2 - drugi wybór: ")
-
-    if tmp == "1":
-        przyczyna_wystawienia = 'Brak ważnej legitymacji studenckiej'
-    elif tmp == "2":
-        przyczyna_wystawienia = 'Brak ważnego biletu'
-    else:
+                        SELECT nr_legitymacji, ilość_mandatów_wystawionych FROM kontrolerzy ORDER BY ilość_mandatów_wystawionych DESC;
+                        ''',
+                        ).fetchall()
+    for kontroler in dane:
+        print(f"ID kontrolera: {kontroler[0]}  wystawionych mandatów: {kontroler[1]}")
+        
+def lista_kontrolerow(conn):
+    dane = conn.execute('''
+                        SELECT * FROM kontrolerzy;
+                        ''',
+                        ).fetchall()
+    for kontroler in dane:
+        print(f"ID kontrolera: {kontroler[0]}  Imie kontrolera: {kontroler[1]}  Nazwisko kontrolera: {kontroler[2]}  Ilość wystawionych mandatów: {kontroler[3]}  Numer przypisanego skanera: {kontroler[4]}")
+        
+def wyswietl_kontrolera(conn):
+    ID_choice = input("    Wpisz nr legitymacji kontrolera: ")
+    dane = conn.execute('''
+                        SELECT * FROM kontrolerzy WHERE nr_legitymacji = ?;
+                        ''',
+                        (ID_choice,)).fetchall()
+    if not dane:
+        print("    Brak kontrolera o podanym numerze legitymacji")
         return
-
-    linie_numer = input("Podaj numer linii")
-    wybor2 = conn.execute('''
-                          SELECT * FROM linie WHERE numer = ?;
-                          ''',
-                          (linie_numer,)).fetchone()
-
-    if not wybor2:
-        return
-
-    pasazerowie_pesel = input("Podaj numer PESEL pasażera")
-    wybor3 = conn.execute('''
-                          SELECT * FROM pasażerowie WHERE pesel = ?;
-                          ''',
-                          (pasazerowie_pesel,)).fetchone()
-
-    if not wybor3:
-        return
-
-    nr_legitymacji = input("Podaj swój numer legitymacji")
-    wybor6 = conn.execute('''
-                          SELECT * FROM kontrolerzy WHERE nr_legitymacji = ?;
-                          ''',
-                          (nr_legitymacji,)).fetchone()
-
-    if not wybor6:
-        return
-
-    nr_pojazdu = input("Podaj numer pojazdu")
-    wybor4 = conn.execute('''
-                          SELECT * FROM pojazdy WHERE nr_pojazdu = ?;
-                          ''',
-                          (nr_pojazdu,)).fetchone()
-
-    if not wybor4:
-        return
-
-    id_przystanku = input("Podaj id przystanku")
-    wybor5 = conn.execute('''
-                    SELECT * FROM przystanki WHERE id_przystanku = ?;
-                    ''',
-                          (id_przystanku,)).fetchone()
-
-    if not wybor5:
-        return
-
-    conn.execute('''INSERT INTO mandaty
-                    (data_wystawienia,
-                    termin_zapłaty,
-                    typy_mandatów_przyczyna_wystawienia,
-                    linie_numer,
-                    pasażerowie_pesel,
-                    kontrolerzy_nr_legitymacji,
-                    pojazdy_nr_pojazdu,
-                    przystanki_id_przystanku)
-                    VALUES (?,?,?,?,?,?,?,?)
-                    ''',
-                 (wystawienie, zaplata, przyczyna_wystawienia, linie_numer,
-                  pasazerowie_pesel, nr_legitymacji, nr_pojazdu, id_przystanku)
-                 )
-
-    print('Mandat dodany')
+    print(f"ID kontrolera: {dane[0][0]}  Imie kontrolera: {dane[0][1]}  Nazwisko kontrolera: {dane[0][2]}  Ilość wystawionych mandatów: {dane[0][3]}  Numer przypisanego skanera: {dane[0][4]}")
