@@ -92,6 +92,7 @@ def dodaj_mandat(conn):
                  )
 
     print('Mandat dodany')
+    conn.commit()
 
 #******************************************************************************************wyswietl mandat**************
 def wyswietl_mandat(conn):
@@ -122,6 +123,7 @@ def usun_mandat(conn):
                         ''',
                         (id_choice,))
     print("Mandat usuniety")
+    conn.commit()
 
 #******************************************************************************wprowadz platnosc************************
 def wprowadz_platnosc(conn):
