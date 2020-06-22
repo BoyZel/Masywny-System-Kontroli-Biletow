@@ -122,7 +122,25 @@ def bilety_okres(conn):
         print("    Brak biletow w tym typie")
         return
     print(dane[0][0])
-
+    
+def bilety_wiek(conn):
+    wiek_choice = int(input("   Wpisz wiek: "))
+    
+    if wiek_choice > 0 and wiek_choice <= 20:
+        pesel_numbers = str(20-wiek_choice+20)
+        print(pesel_numbers)
+        dane = conn.execute('''
+                        SELECT id_biletu FROM bilety_elektroniczne WHERE SUBSTR(pasażerowie_pesel, 1, 2) = ?;
+                        ''',
+                        (pesel_numbers,)).fetchall()
+    elif wiek_choice > 20:
+        pesel_numbers = str(99 - wiek_choice + 21)
+        print(pesel_numbers)
+        dane = conn.execute('''
+                        SELECT id_biletu FROM bilety_elektroniczne WHERE SUBSTR(pasażerowie_pesel, 1, 2) = ?;
+                        ''',
+                        (pesel_numbers,)).fetchall()
+    print(dane)
 def ranking_kontrolerow(conn):
     dane = conn.execute('''
                         SELECT nr_legitymacji, ilość_mandatów_wystawionych FROM kontrolerzy ORDER BY ilość_mandatów_wystawionych DESC;
